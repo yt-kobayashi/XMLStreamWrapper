@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -8,19 +9,26 @@ namespace WrapperTest
     {
         static void Main(string[] args)
         {
-            Debug.Write("Hello! Debug!!");
+            Sample sample = new Sample();
+            XMLStreamWrapper.SimpleXmlSerializerWrapper<Sample> xmlSerializer = new XMLStreamWrapper.SimpleXmlSerializerWrapper<Sample>(sample, "age.xml");
+            xmlSerializer.Serialize();
+            List<Type> types = new List<Type>();
 
-            Dictionary<string, string> dic = new Dictionary<string, string>();
-            dic.Add("dic1", "DIC1");
-            dic.Add("dic2", "DIC2");
-            dic.Add("dic3", "DIC3");
-            dic.Add("dic4", "DIC4");
-            dic.Add("dic5", "DIC5");
-            dic.Add("dic6", "DIC6");
-            dic.Add("dic7", "DIC7");
-            dic.Add("dic8", "DIC8");
+            foreach(Type type in types)
+            {
+                Console.WriteLine(type.Name);
+            }
+        }
+    }
 
-            XMLStreamWrapper.XmlSerializerWrapper<Dictionary<string, string>> wrapper = new XMLStreamWrapper.XmlSerializerWrapper<Dictionary<string, string>>(dic, "aaa");
+    public class Sample
+    {
+        public string Name { get; set; } = "No Name";
+        public short Age { get; set; } = 20;
+        private string _name;
+
+        public Sample() {
+            _name = "Name";
         }
     }
 }

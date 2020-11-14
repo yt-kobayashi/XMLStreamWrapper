@@ -1,25 +1,51 @@
 ﻿using System;
 using System.Xml.Serialization;
-using System.Threading;
-using System.Diagnostics;
+using System.IO;
+using System.Text;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace XMLStreamWrapper
 {
-    public class XmlSerializerWrapper<ObjectType>
+    public class SimpleXmlSerializerWrapper<ObjectType>
     {
+        public ObjectType TargetObject { get; set; }        // シリアライズ対象オブジェクト
         public XmlSerializer Serializer { get; set; }       // Xmlシリアライザ
-        public string FileName { get; set; }                // 保存先ファイル名
-        public ObjectType TargetObject { get; set; }
+        public string FilePath { get; set; }                // 保存先ファイルパス
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        /// <param name="type"></param>
-        public XmlSerializerWrapper(in ObjectType serializeTarget, in string fileName)
+        /// <param name="serializeTarget">シリアライズオブジェクト</param>
+        /// <param name="filePath">保存ファイルパス</param>
+        public SimpleXmlSerializerWrapper(in ObjectType serializeTarget, in string filePath)
         {
             Serializer = new XmlSerializer(typeof(ObjectType));
             TargetObject = serializeTarget;
-            FileName = fileName;
+            FilePath = filePath;
+        }
+
+        /// <summary>
+        /// シリアライズメソッド
+        /// </summary>
+        public void Serialize()
+        {
+            StreamWriter stream = new StreamWriter(FilePath, false, Encoding.UTF8);
+            Serializer.Serialize(stream, TargetObject);
+            stream.Close();
+        }
+
+        /// <summary>
+        /// デシリアライズメソッド
+        /// </summary>
+        /// <returns>読み込んだオブジェクト</returns>
+        public ObjectType Deserialize()
+        {
+            StreamReader reader = new StreamReader(FilePath, Encoding.UTF8);
+            TargetObject = (ObjectType)Serializer.Deserialize(reader);
+            reader.Close();
+
+            return TargetObject;
         }
     }
 }
